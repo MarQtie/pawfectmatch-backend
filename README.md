@@ -1,8 +1,3 @@
-
----
-
-## 🔹 `pawfectmatch-backend/README.md`
-```markdown
 # PawfectMatch Backend (ASP.NET Core API)
 
 This is the **backend service** for PawfectMatch.  
