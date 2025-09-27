@@ -5,7 +5,7 @@ It provides APIs, authentication, and business logic for both the **Web App** an
 
 ---
 
-## 🚀 Features
+## Features
 - **Authentication & Authorization**
 - **Adoption Workflow**
   - Pet Owner → Adopter request flow
@@ -20,7 +20,7 @@ It provides APIs, authentication, and business logic for both the **Web App** an
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 - ASP.NET Core (C#)
 - REST APIs
 - Supabase (Managed PostgreSQL + Storage)
