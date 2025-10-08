@@ -1,20 +1,29 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-
 using FluentValidation;
 using FluentValidation.AspNetCore;
-
 using PawfectMatch.Backend.Data;
 using PawfectMatch.Backend.Services;
 using PawfectMatch.Backend.Services.Interfaces;
 using PawfectMatch.Backend.Services.Implementations;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Env.Load();
+
+var connectionString = Environment.GetEnvironmentVariable("SUPABASE_CONNECTION_STRING")
+                       ?? builder.Configuration.GetConnectionString("Supabase");
+
+var supabaseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL")
+                  ?? builder.Configuration["Supabase:Url"];
+
+var supabaseApiKey = Environment.GetEnvironmentVariable("SUPABASE_API_KEY")
+                       ?? builder.Configuration["Supabase:ApiKey"];
+
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
+    options.UseNpgsql(connectionString));
 
 // Add Controllers
 builder.Services.AddControllers()
@@ -34,21 +43,6 @@ builder.Services.AddScoped<IPetService, PetService>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<IAdoptionRequestService, AdoptionRequestService>();
 
-// Add JWT
-//builder.Services.AddAuthentication("Bearer")
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = false,
-//            ValidateAudience = false,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            IssuerSigningKey = new SymmetricSecurityKey(
-//                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-//        };
-//    });
-
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -57,18 +51,18 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "PawfectMatch API",
         Version = "v1",
-        Description = "REST API for managing users, pets, adoption requests, a`nd logs."
+        Description = "REST API for managing users, pets, adoption requests, and logs."
     });
 });
 
-var app = builder.Build();`
+var app = builder.Build();
 
-// Enable Swagger UI always (dev + prod)
+// Enable Swagger UI
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "PawfectMatch API v1");
-    c.RoutePrefix = string.Empty; // open at root: http://localhost:5000/
+    c.RoutePrefix = string.Empty;
 });
 
 app.UseHttpsRedirection();
